@@ -1,47 +1,80 @@
 
-const directions = {
-    LeftRight: "LR",
-    RightLeft: "RL",
-    UpDown: "UD",
-    DownUp: "DU"
+class LeftRightState {
+
+    isCollisionWithEdgeInNextIncrement(i, j, array){
+        return ((j + 1 >= array.length) || array[i][j+1] === null)
+    }
+
+    moveCoordinates(coordinates){
+        coordinates[1]++;
+    }
+
+    getNextState(){
+        return new UpDownState();
+    }
+}
+
+class RightLeftState {
+    isCollisionWithEdgeInNextIncrement(i, j, array){
+        return ((j - 1 < 0 ) || array[i][j-1] === null)
+    }
+
+    moveCoordinates(coordinates){
+        coordinates[1]--;
+    }
+
+    getNextState(){
+        return new DownUpState();
+    }
+}
+
+class UpDownState {
+    isCollisionWithEdgeInNextIncrement(i, j, array){
+        return ((i + 1 >= array.length) || array[i+1][j] === null)
+    }
+
+    moveCoordinates(coordinates){
+        coordinates[0]++;
+    }
+
+    getNextState(){
+        return new RightLeftState();
+    }
+}
+
+class DownUpState {
+    isCollisionWithEdgeInNextIncrement(i, j, array){
+        return ((i - 1 < 0) || array[i-1][j] === null)
+    }
+
+    moveCoordinates(coordinates){
+        coordinates[0]--;
+    }
+
+    getNextState(){
+        return new LeftRightState();
+    }
 }
 
 //TODO: Refactor to state pattern ?
 snail = function(array){
     let i = 0, j = 0;
     let numbers = [];
-    let currentDirection = directions.LeftRight;
+    var currentState = new LeftRightState();
     while(numbers.length < array.length * array[0].length){
         numbers.push(array[i][j]);
         array[i][j] = null;
-        if(currentDirection === directions.LeftRight && ((j + 1 >= array.length) || array[i][j+1] === null)){
-            currentDirection = directions.UpDown;
-        }
-        else if(currentDirection === directions.RightLeft && ((j - 1 < 0 ) || array[i][j-1] === null)){
-            currentDirection = directions.DownUp;
-        }
-        else if(currentDirection === directions.DownUp && ((i - 1 < 0) || array[i-1][j] === null)){
-            currentDirection = directions.LeftRight;
-        }
-        else if(currentDirection === directions.UpDown && ((i + 1 >= array.length) || array[i+1][j] === null)){
-            currentDirection = directions.RightLeft;
+
+        if(currentState.isCollisionWithEdgeInNextIncrement(i, j, array)){
+            currentState = currentState.getNextState();
         }
 
-        if(currentDirection === directions.LeftRight){
-            j++;
-        }
-        else if(currentDirection === directions.UpDown){
-            i++;
-        }
-        else if(currentDirection === directions.RightLeft){
-            j--;
-        }
-        else{
-            i--;
-        }
+        var coords = [i, j];
+        currentState.moveCoordinates(coords);
+        [i, j] = coords;
 
     }
     return numbers;
 }
 
-console.log(snail([[]]));
+console.log(snail([[1, 2, 3], [4, 5, 6], [7, 8, 9]]));

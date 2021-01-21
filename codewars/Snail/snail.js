@@ -56,7 +56,6 @@ class DownUpState {
     }
 }
 
-//TODO: Refactor to state pattern ?
 snail = function(array){
     let i = 0, j = 0;
     let numbers = [];

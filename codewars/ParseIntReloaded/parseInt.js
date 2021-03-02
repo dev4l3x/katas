@@ -1,0 +1,3 @@
+function parseInt(string) {
+    
+}
